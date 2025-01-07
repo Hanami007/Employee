@@ -14,7 +14,9 @@ export default function Index({ employees, query, filterBy }) {
     return (
         <AuthenticatedLayout>
             <div className="max-w-4xl mx-auto p-4">
-                <h1 className="text-2xl font-bold text-center mb-6">รายชื่อพนักงาน</h1>
+                <h1 className="text-2xl font-bold text-center mb-6">
+                    รายชื่อพนักงาน
+                </h1>
 
                 {/* Search Form */}
                 <form
@@ -49,11 +51,21 @@ export default function Index({ employees, query, filterBy }) {
                     <table className="table-auto w-full border-collapse border border-gray-300">
                         <thead>
                             <tr className="bg-gray-100">
-                                <th className="border border-gray-300 px-4 py-2">ID</th>
-                                <th className="border border-gray-300 px-4 py-2">First Name</th>
-                                <th className="border border-gray-300 px-4 py-2">Last Name</th>
-                                <th className="border border-gray-300 px-4 py-2">Gender</th>
-                                <th className="border border-gray-300 px-4 py-2">Birth Day</th>
+                                <th className="border border-gray-300 px-4 py-2">
+                                    ID
+                                </th>
+                                <th className="border border-gray-300 px-4 py-2">
+                                    First Name
+                                </th>
+                                <th className="border border-gray-300 px-4 py-2">
+                                    Last Name
+                                </th>
+                                <th className="border border-gray-300 px-4 py-2">
+                                    Gender
+                                </th>
+                                <th className="border border-gray-300 px-4 py-2">
+                                    Birth Day
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -62,7 +74,9 @@ export default function Index({ employees, query, filterBy }) {
                                     <tr
                                         key={index}
                                         className={`${
-                                            index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                                            index % 2 === 0
+                                                ? "bg-white"
+                                                : "bg-gray-50"
                                         }`}
                                     >
                                         <td className="border border-gray-300 px-4 py-2">
@@ -75,10 +89,12 @@ export default function Index({ employees, query, filterBy }) {
                                             {employee.last_name}
                                         </td>
                                         <td className="border border-gray-300 px-4 py-2">
-                                            {employee.gender === "M" ? "ชาย" : "หญิง"}
+                                            {employee.gender === "M"
+                                                ? "ชาย"
+                                                : "หญิง"}
                                         </td>
                                         <td className="border border-gray-300 px-4 py-2">
-                                        <td>{employee.birth_date}</td>
+                                            <td>{employee.birth_date}</td>
                                         </td>
                                     </tr>
                                 ))
@@ -101,7 +117,7 @@ export default function Index({ employees, query, filterBy }) {
                     {employees.links.map((link, index) => (
                         <a
                             key={index}
-                            href={link.url}
+                            href={`${link.url}&search=${search}&filterBy=${searchBy}`}
                             className={`px-3 py-1 border rounded-md ${
                                 link.active
                                     ? "bg-blue-500 text-white"
@@ -115,4 +131,3 @@ export default function Index({ employees, query, filterBy }) {
         </AuthenticatedLayout>
     );
 }
-
