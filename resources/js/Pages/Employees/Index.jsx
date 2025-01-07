@@ -28,7 +28,6 @@ export default function Index({ employees, query, filterBy }) {
                     >
                         <option value="first_name">secret all</option>
                         <option value="last_name">secret LastName</option>
-                        <option value="emp_no">ค้นหาจาก ID</option>
                     </select>
                     <input
                         type="text"
