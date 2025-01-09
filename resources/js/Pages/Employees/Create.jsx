@@ -17,6 +17,10 @@ export default function Create({ departments }) {
         post(route('employees.store'));
     };
 
+    const FlashMessge = ({flash})=>{
+        if(!flash.success && !flash.error) return null;
+    }
+
     return (
     <AuthenticatedLayout>
         <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
