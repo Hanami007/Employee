@@ -28,7 +28,7 @@ export default function Index({ employees, query, filterBy }) {
                         onChange={(e) => setSearchBy(e.target.value)}
                         className="border border-gray-300 rounded-md p-2 w-full md:w-auto"
                     >
-                        <option value="first_name">First Name</option>
+                        <option value="first_name">SearchAll</option>
                         <option value="last_name">Last Name</option>
                     </select>
                     <input
@@ -56,6 +56,7 @@ export default function Index({ employees, query, filterBy }) {
                                 <th className="border border-gray-300 px-4 py-2">Last Name</th>
                                 <th className="border border-gray-300 px-4 py-2">Gender</th>
                                 <th className="border border-gray-300 px-4 py-2">Birth Day</th>
+                                <th className="border border-gray-300 px-4 py-2">Department</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -81,6 +82,9 @@ export default function Index({ employees, query, filterBy }) {
                                         </td>
                                         <td className="border border-gray-300 px-4 py-2">
                                             {employee.birth_date}
+                                        </td>
+                                        <td className="border border-gray-300 px-4 py-2">
+                                            {employee.dept_name}
                                         </td>
                                     </tr>
                                 ))

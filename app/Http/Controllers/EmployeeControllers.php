@@ -16,22 +16,30 @@ class EmployeeControllers extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {
-        $query = $request->input('search');
-        $search = $request->input('search', '');
-        $filterBy = $request->input('filterBy', 'first_name');
-        $employees = Employee::when($search, function ($query, $search) use ($filterBy) {
-            $query->where($filterBy, 'like', "%{$search}%");
-        })->paginate(10);
+{
+    $query = $request->input('search', '');
+    $filterBy = $request->input('filterBy', 'first_name');
 
-        // $employees = DB::table('employees')
-        //     ->where('first_name', 'like', '%' . $query . '%')
-        //     ->orWhere('last_name', 'like', '%' . $query . '%')
-        //     ->paginate(10);
+    // ใช้ join เพื่อนำข้อมูล department มาแสดง
+    $employees = DB::table('employees')
+        ->join('dept_emp', 'employees.emp_no', '=', 'dept_emp.emp_no')
+        ->join('departments', 'dept_emp.dept_no', '=', 'departments.dept_no')
+        ->when($query, function ($queryBuilder, $query) use ($filterBy) {
+            $queryBuilder->where("employees.{$filterBy}", 'like', "%{$query}%");
+        })
+        ->select(
+            'employees.emp_no',
+            'employees.first_name',
+            'employees.last_name',
+            'employees.gender',
+            'employees.birth_date',
+            'departments.dept_name'
+        )
+        ->paginate(10);
 
-        return inertia('Employees/Index', [
+    return inertia('Employees/Index', [
         'employees' => $employees,
-        'query' => $search,
+        'query' => $query,
         'filterBy' => $filterBy,
     ]);
 }
