@@ -57,11 +57,12 @@ class EmployeeControllers extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'gender' => 'required|string|max:1',
+            'first_name' => 'required|string|max:14',
+            'last_name' => 'required|string|max:16',
+            'dept_no' => 'required|exists:departments,dept_no',
             'birth_date' => 'required|date',
-            'hire_date' => 'required|date',
+            'hire_date' => 'nullable|date',
+            'gender' => 'required|in:M,F',
         ]);
 
         try {
