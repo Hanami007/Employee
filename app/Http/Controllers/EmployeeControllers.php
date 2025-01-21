@@ -32,7 +32,8 @@ class EmployeeControllers extends Controller
                 'employees.last_name',
                 'employees.gender',
                 'employees.birth_date',
-                'departments.dept_name'
+                'departments.dept_name',
+                'employees.image_path'
             )
             ->orderBy('employees.emp_no') // เรียงตาม emp_no โดยข้อมูลใหม่อยู่ด้านบน
             ->paginate(10);
@@ -77,9 +78,10 @@ class EmployeeControllers extends Controller
 
                 Log::info("New Employee Number: " . $newEmpNo);
 
-                $imagePath = null;
                 if ($request->hasFile('photo')) {
-                    $imagePath = $request->file('photo')->store('employees', 'public'); // บันทึกไฟล์ใน storage
+                    $photoPath = $request->file('photo')->store('employee_photos', 'public');
+                } else {
+                    $photoPath = null;
                 }
 
                 // 2. เพิ่มข้อมูลลงในฐานข้อมูลอย่างถูกต้อง
@@ -90,7 +92,7 @@ class EmployeeControllers extends Controller
                     "gender"     => $validated['gender'],
                     "birth_date" => $validated['birth_date'],
                     "hire_date"  => $validated['hire_date'],
-                    'image_path' => $imagePath,
+                    'image_path' => $photoPath,
                 ]);
 
                 // 3. เพิ่มข้อมูลลงในตาราง dept_emp
@@ -99,6 +101,7 @@ class EmployeeControllers extends Controller
                     "dept_no" => $validated['dept_no'],
                     "from_date" => now(),
                     "to_date" => '9999-01-01',
+
                 ]);
             });
 

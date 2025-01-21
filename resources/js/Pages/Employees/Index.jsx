@@ -1,14 +1,22 @@
 import React, { useState } from "react";
 import { router, Link } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import Modal from "@/Components/Modal";
 
 export default function Index({ employees, query, filterBy }) {
     const [search, setSearch] = useState(query || "");
     const [searchBy, setSearchBy] = useState(filterBy || "first_name");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedPhoto, setSelectedPhoto] = useState(null);
 
     const handleSearch = (e) => {
         e.preventDefault();
         router.get("/employees", { search, filterBy: searchBy });
+    };
+
+    const handlePhotoClick = (photo) => {
+        setSelectedPhoto(photo);
+        setIsModalOpen(true);
     };
 
     return (
@@ -50,13 +58,27 @@ export default function Index({ employees, query, filterBy }) {
                 <table className="min-w-full bg-white border border-gray-300">
                     <thead>
                         <tr>
-                            <th className="border border-gray-300 px-4 py-2">Emp No</th>
-                            <th className="border border-gray-300 px-4 py-2">First Name</th>
-                            <th className="border border-gray-300 px-4 py-2">Last Name</th>
-                            <th className="border border-gray-300 px-4 py-2">Gender</th>
-                            <th className="border border-gray-300 px-4 py-2">Birth Date</th>
-                            <th className="border border-gray-300 px-4 py-2">Department</th>
-                            <th className="border border-gray-300 px-4 py-2">Photo</th>
+                            <th className="border border-gray-300 px-4 py-2">
+                                Emp No
+                            </th>
+                            <th className="border border-gray-300 px-4 py-2">
+                                First Name
+                            </th>
+                            <th className="border border-gray-300 px-4 py-2">
+                                Last Name
+                            </th>
+                            <th className="border border-gray-300 px-4 py-2">
+                                Gender
+                            </th>
+                            <th className="border border-gray-300 px-4 py-2">
+                                Birth Date
+                            </th>
+                            <th className="border border-gray-300 px-4 py-2">
+                                Department
+                            </th>
+                            <th className="border border-gray-300 px-4 py-2">
+                                Photo
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -65,7 +87,9 @@ export default function Index({ employees, query, filterBy }) {
                                 <tr
                                     key={employee.emp_no}
                                     className={`${
-                                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                                        index % 2 === 0
+                                            ? "bg-white"
+                                            : "bg-gray-50"
                                     }`}
                                 >
                                     <td className="border border-gray-300 px-4 py-2">
@@ -78,7 +102,9 @@ export default function Index({ employees, query, filterBy }) {
                                         {employee.last_name}
                                     </td>
                                     <td className="border border-gray-300 px-4 py-2">
-                                        {employee.gender === "M" ? "ชาย" : "หญิง"}
+                                        {employee.gender === "M"
+                                            ? "ชาย"
+                                            : "หญิง"}
                                     </td>
                                     <td className="border border-gray-300 px-4 py-2">
                                         {employee.birth_date}
@@ -87,21 +113,31 @@ export default function Index({ employees, query, filterBy }) {
                                         {employee.dept_name}
                                     </td>
                                     <td className="border border-gray-300 px-4 py-2">
-                                        {employee.photo ? (
+                                        {employee.image_path ? (
                                             <img
-                                                src={`/storage/${employee.photo}`}
+                                                src={`/storage/${employee.image_path}`} // อ้างอิงเส้นทางรูปภาพ
                                                 alt="Employee Image"
-                                                className="w-20 h-20 object-cover rounded-full"
+                                                className="w-20 h-20 object-cover rounded-full cursor-pointer"
+                                                onClick={() =>
+                                                    handlePhotoClick(
+                                                        employee.image_path
+                                                    )
+                                                } // ใช้พาธรูปภาพที่ถูกต้อง
                                             />
                                         ) : (
-                                            <span className="text-gray-500">No Photo</span>
+                                            <span className="text-gray-500">
+                                                No Photo
+                                            </span>
                                         )}
                                     </td>
                                 </tr>
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="7" className="text-center text-gray-500 py-4">
+                                <td
+                                    colSpan="7"
+                                    className="text-center text-gray-500 py-4"
+                                >
                                     No employees found.
                                 </td>
                             </tr>
@@ -110,27 +146,37 @@ export default function Index({ employees, query, filterBy }) {
                 </table>
             </div>
             <div className="flex justify-center items-center mt-4 space-x-2">
-                    {employees.links.map((link, index) => (
-                        link.url ? (
-                            <Link
-                                key={index}
-                                href={`${link.url}&search=${search}&filterBy=${searchBy}`}
-                                className={`px-3 py-1 border rounded-md ${
-                                    link.active
-                                        ? "bg-blue-500 text-white"
-                                        : "bg-white text-blue-500 border-blue-500"
-                                } hover:bg-blue-600 hover:text-white`}
-                                dangerouslySetInnerHTML={{ __html: link.label }}
-                            />
-                        ) : (
-                            <span
-                                key={index}
-                                className={`px-3 py-1 border rounded-md bg-gray-200 text-gray-500`}
-                                dangerouslySetInnerHTML={{ __html: link.label }}
-                            />
-                        )
-                    ))}
-                </div>
+                {employees.links.map((link, index) =>
+                    link.url ? (
+                        <Link
+                            key={index}
+                            href={`${link.url}&search=${search}&filterBy=${searchBy}`}
+                            className={`px-3 py-1 border rounded-md ${
+                                link.active
+                                    ? "bg-blue-500 text-white"
+                                    : "bg-white text-blue-500 border-blue-500"
+                            } hover:bg-blue-600 hover:text-white`}
+                            dangerouslySetInnerHTML={{ __html: link.label }}
+                        />
+                    ) : (
+                        <span
+                            key={index}
+                            className={`px-3 py-1 border rounded-md bg-gray-200 text-gray-500`}
+                            dangerouslySetInnerHTML={{ __html: link.label }}
+                        />
+                    )
+                )}
+            </div>
+            {/* Modal for displaying photo */}
+            <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                {selectedPhoto && (
+                    <img
+                        src={`/storage/${selectedPhoto}`}
+                        alt="Employee Image"
+                        className="w-full h-auto"
+                    />
+                )}
+            </Modal>
         </AuthenticatedLayout>
     );
 }

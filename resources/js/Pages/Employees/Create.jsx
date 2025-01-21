@@ -21,10 +21,17 @@ export default function Create({ departments }) {
         formData.append("birth_date", data.birth_date);
         formData.append("hire_date", data.hire_date);
         formData.append("gender", data.gender);
+
         if (data.photo) {
             formData.append("photo", data.photo);
         }
-        post(route("employees.store"), formData);
+
+        post(route("employees.store"), {
+            data: formData,
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
     };
 
     return (
@@ -153,16 +160,16 @@ export default function Create({ departments }) {
                         )}
                     </div>
                     <div>
-                        <label className="block text-gray-700 font-medium">
-                            Upload Photo
+                        <label className="block text-sm font-medium text-gray-700">
+                            Photo:
                         </label>
                         <input
                             type="file"
+                            accept="image/*"
                             onChange={(e) =>
                                 setData("photo", e.target.files[0])
                             }
-                            accept="image/*"
-                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="mt-1 p-2 block w-full border rounded-lg focus:ring-blue-500 focus:border-blue-500"
                         />
                         {errors.photo && (
                             <span className="text-red-500 text-sm">
@@ -176,7 +183,7 @@ export default function Create({ departments }) {
                         className="w-full bg-blue-500 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         disabled={processing}
                     >
-                        {processing ? 'Processing...' : 'Create'}
+                        {processing ? "Processing..." : "Create"}
                     </button>
                 </form>
             </div>
