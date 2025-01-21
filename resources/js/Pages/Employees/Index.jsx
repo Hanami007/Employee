@@ -19,6 +19,18 @@ export default function Index({ employees, query, filterBy }) {
         setIsModalOpen(true);
     };
 
+    const validateForm = () => {
+        if (!data.first_name || !data.last_name || !data.dept_no || !data.gender) {
+            setErrorMessage("All fields are required.");
+            return false;
+        }
+        return true;
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (!validateForm()) return;
+    }
     return (
         <AuthenticatedLayout>
             <div className="max-w-4xl mx-auto p-4">

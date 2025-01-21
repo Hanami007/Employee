@@ -1,7 +1,12 @@
 import { useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { useState } from "react";
 
 export default function Create({ departments }) {
+    const [successMessage, setSuccessMessage] = useState(null);
+
+    const [errorMessage, setErrorMessage] = useState(null);
+
     const { data, setData, post, errors, processing } = useForm({
         first_name: "",
         last_name: "",
@@ -13,6 +18,7 @@ export default function Create({ departments }) {
     });
 
     const handleSubmit = (e) => {
+        //backend
         e.preventDefault();
         const formData = new FormData();
         formData.append("first_name", data.first_name);
@@ -31,12 +37,33 @@ export default function Create({ departments }) {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
+            onSuccess: () => {
+                setSuccessMessage("Employee created successfully!");
+                setTimeout(() => setSuccessMessage(null), 3000);
+            },
+            onError: () => {
+                setErrorMessage("An error occurred while creating employee. Please try again.");
+                setTimeout(() => setErrorMessage(null), 3000);
+            },
         });
     };
 
     return (
         <AuthenticatedLayout>
             <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
+                {/* แสดงข้อความ Success */}
+                {successMessage && (
+                    <div className="bg-green-100 text-green-800 p-4 rounded mb-4">
+                        {successMessage}
+                    </div>
+                )}
+
+                {/* แสดงข้อความ Error */}
+                {errorMessage && (
+                    <div className="bg-red-100 text-red-800 p-4 rounded mb-4">
+                        {errorMessage}
+                    </div>
+                )}
                 <h2 className="text-2xl font-bold text-center mb-6">
                     Add Employee
                 </h2>
@@ -91,12 +118,16 @@ export default function Create({ departments }) {
                             required
                             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
+                            <option value="" disabled>
+                                Please select department
+                            </option>
                             {departments.map((dept) => (
                                 <option key={dept.dept_no} value={dept.dept_no}>
                                     {dept.dept_name}
                                 </option>
                             ))}
                         </select>
+
                         {errors.dept_no && (
                             <span className="text-red-500 text-sm">
                                 {errors.dept_no}
@@ -150,9 +181,13 @@ export default function Create({ departments }) {
                             required
                             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
+                            <option value="" disabled>
+                                Please select gender
+                            </option>
                             <option value="M">Male</option>
                             <option value="F">Female</option>
                         </select>
+
                         {errors.gender && (
                             <span className="text-red-500 text-sm">
                                 {errors.gender}
@@ -183,7 +218,33 @@ export default function Create({ departments }) {
                         className="w-full bg-blue-500 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         disabled={processing}
                     >
-                        {processing ? "Processing..." : "Create"}
+                        {processing ? (
+                            <span className="flex items-center justify-center">
+                                <svg
+                                    className="animate-spin h-5 w-5 mr-2"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                    ></circle>
+                                    <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8v8h8a8 8 0 01-8 8v-8H4z"
+                                    ></path>
+                                </svg>
+                                Processing...
+                            </span>
+                        ) : (
+                            "Create"
+                        )}
                     </button>
                 </form>
             </div>

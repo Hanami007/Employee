@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Support\Facades\Redirect;
 
 use function Illuminate\Events\queueable;
 
@@ -112,8 +112,8 @@ class EmployeeControllers extends Controller
             Log::error('Employee creation failed: ' . $e->getMessage());
 
             // ส่งข้อความตอบกลับเมื่อไม่สำเร็จ
-            return redirect()->route('employees.index')
-                ->with('error', 'Employee creation failed.');
+            return Redirect::back()->withErrors(['error' => 'An error occurred while creating employee. Please try again.'])
+                                ->withInput(); // คืนค่าข้อมูลที่กรอกไว้
         }
     }
 
