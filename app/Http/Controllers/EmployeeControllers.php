@@ -16,33 +16,34 @@ class EmployeeControllers extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-{
-    $query = $request->input('search', '');
-    $filterBy = $request->input('filterBy', 'first_name');
+    {
+        $query = $request->input('search', '');
+        $filterBy = $request->input('filterBy', 'first_name');
 
-    // ใช้ join เพื่อนำข้อมูล department มาแสดง
-    $employees = DB::table('employees')
-        ->join('dept_emp', 'employees.emp_no', '=', 'dept_emp.emp_no')
-        ->join('departments', 'dept_emp.dept_no', '=', 'departments.dept_no')
-        ->when($query, function ($queryBuilder, $query) use ($filterBy) {
-            $queryBuilder->where("employees.{$filterBy}", 'like', "%{$query}%");
-        })
-        ->select(
-            'employees.emp_no',
-            'employees.first_name',
-            'employees.last_name',
-            'employees.gender',
-            'employees.birth_date',
-            'departments.dept_name'
-        )
-        ->paginate(10);
+        $employees = DB::table('employees')
+            ->join('dept_emp', 'employees.emp_no', '=', 'dept_emp.emp_no')
+            ->join('departments', 'dept_emp.dept_no', '=', 'departments.dept_no')
+            ->when($query, function ($queryBuilder, $query) use ($filterBy) {
+                $queryBuilder->where("employees.{$filterBy}", 'like', "%{$query}%");
+            })
+            ->select(
+                'employees.emp_no',
+                'employees.first_name',
+                'employees.last_name',
+                'employees.gender',
+                'employees.birth_date',
+                'departments.dept_name'
+            )
+            ->orderBy('employees.emp_no') // เรียงตาม emp_no โดยข้อมูลใหม่อยู่ด้านบน
+            ->paginate(10);
 
-    return inertia('Employees/Index', [
-        'employees' => $employees,
-        'query' => $query,
-        'filterBy' => $filterBy,
-    ]);
-}
+        return Inertia::render('Employees/Index', [
+            'employees' => $employees,
+            'query' => $query,
+            'filterBy' => $filterBy,
+        ]);
+    }
+
 
     /**
      * Show the form for creating a new resource.
@@ -52,26 +53,34 @@ class EmployeeControllers extends Controller
 
         $departments = DB::table('departments')->select('dept_no', 'dept_name')->get();
 
-        return inertia('Employees/Create', ['departments' => $departments]);
+        return Inertia::render('Employees/Create', ['departments' => $departments]);
     }
     public function store(Request $request)
     {
+        // รับข้อมูลจากฟอร์ม พร้อมตรวจสอบความถูกต้อง
         $validated = $request->validate([
-            'first_name' => 'required|string|max:14',
-            'last_name' => 'required|string|max:16',
-            'dept_no' => 'required|exists:departments,dept_no',
-            'birth_date' => 'required|date',
-            'hire_date' => 'nullable|date',
+            "birth_date" => "required|date",
+            "first_name" => "required|string|max:255",
+            "last_name"  => "required|string|max:255",
             'gender' => 'required|in:M,F',
+            "hire_date"  => "required|date",
+            "dept_no" => "required|exists:departments,dept_no",
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         try {
-            DB::transaction(function () use ($validated) {
+            // ใช้ Database Transaction เพื่อความปลอดภัย
+            DB::transaction(function () use ($validated, $request) {
                 // 1. หาค่า emp_no ล่าสุด
                 $latestEmpNo = DB::table('employees')->max('emp_no') ?? 0;
                 $newEmpNo = $latestEmpNo + 1; // เพิ่มค่า emp_no ทีละ 1
 
                 Log::info("New Employee Number: " . $newEmpNo);
+
+                $imagePath = null;
+                if ($request->hasFile('photo')) {
+                    $imagePath = $request->file('photo')->store('employees', 'public'); // บันทึกไฟล์ใน storage
+                }
 
                 // 2. เพิ่มข้อมูลลงในฐานข้อมูลอย่างถูกต้อง
                 DB::table("employees")->insert([
@@ -81,6 +90,15 @@ class EmployeeControllers extends Controller
                     "gender"     => $validated['gender'],
                     "birth_date" => $validated['birth_date'],
                     "hire_date"  => $validated['hire_date'],
+                    'image_path' => $imagePath,
+                ]);
+
+                // 3. เพิ่มข้อมูลลงในตาราง dept_emp
+                DB::table("dept_emp")->insert([
+                    "emp_no" => $newEmpNo,
+                    "dept_no" => $validated['dept_no'],
+                    "from_date" => now(),
+                    "to_date" => '9999-01-01',
                 ]);
             });
 
