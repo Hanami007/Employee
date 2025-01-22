@@ -21,23 +21,8 @@ export default function Create({ departments }) {
     const handleSubmit = (e) => {
         //backend
         e.preventDefault();
-        const formData = new FormData();
-        formData.append("first_name", data.first_name);
-        formData.append("last_name", data.last_name);
-        formData.append("dept_no", data.dept_no);
-        formData.append("birth_date", data.birth_date);
-        formData.append("hire_date", data.hire_date);
-        formData.append("gender", data.gender);
-
-        if (data.photo) {
-            formData.append("photo", data.photo);
-        }
 
         post(route("employees.store"), {
-            data: formData,
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
             onSuccess: () => {
                 Swal.fire({
                     icon: "success",
