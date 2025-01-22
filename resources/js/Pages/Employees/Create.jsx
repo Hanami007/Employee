@@ -1,6 +1,7 @@
 import { useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 export default function Create({ departments }) {
     const [successMessage, setSuccessMessage] = useState(null);
@@ -38,14 +39,23 @@ export default function Create({ departments }) {
                 "Content-Type": "multipart/form-data",
             },
             onSuccess: () => {
+                Swal.fire({
+                    icon: "success",
+                    title: "สำเร็จ!",
+                    text: "สร้างพนักงานสำเร็จ!",
+                });
                 setSuccessMessage("Employee created successfully!");
-                setTimeout(() => setSuccessMessage(null), 3000);
             },
             onError: () => {
+                Swal.fire({
+                    icon: "error",
+                    title: "เกิดข้อผิดพลาด!",
+                    text: "ไม่สามารถสร้างพนักงานได้ กรุณาลองอีกครั้ง",
+                });
                 setErrorMessage("An error occurred while creating employee. Please try again.");
-                setTimeout(() => setErrorMessage(null), 3000);
             },
         });
+
     };
 
     return (
