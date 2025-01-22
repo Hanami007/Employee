@@ -42,7 +42,7 @@ export default function Create({ departments }) {
                 Swal.fire({
                     icon: "success",
                     title: "สำเร็จ!",
-                    text: "สร้างพนักงานสำเร็จ!",
+                    text: "เพิ่มข้อมูลสำเร็จ!",
                 });
                 setSuccessMessage("Employee created successfully!");
             },
@@ -50,7 +50,7 @@ export default function Create({ departments }) {
                 Swal.fire({
                     icon: "error",
                     title: "เกิดข้อผิดพลาด!",
-                    text: "ไม่สามารถสร้างพนักงานได้ กรุณาลองอีกครั้ง",
+                    text: "ไม่สามารถเพิ่มข้อมูลได้ กรุณาลองอีกครั้ง",
                 });
                 setErrorMessage("An error occurred while creating employee. Please try again.");
             },
