@@ -1,21 +1,9 @@
+import { useState, useEffect } from "react";
 import { useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { useState,useEffect } from "react";
-import Swal from "sweetalert2";
-// import FlashMessage from '@/Components/FlashMessage';
 
-export default function Create({ departments,flash }) {
-
-    // const [successMessage, setSuccessMessage] = useState(flash.success);
-    // const [flashMessage, setFlashMessage] = useState({
-    //     success: '',
-    //     error: '',
-    // });
-
-    const [successMessage, setSuccessMessage] = useState(null);
-    const [errorMessage, setErrorMessage] = useState(null);
-
-    const { data, setData, post, errors, processing } = useForm({
+export default function Create({ departments, flash }) {
+    const { data, setData, post, processing, errors } = useForm({
         first_name: "",
         last_name: "",
         dept_no: "",
@@ -25,63 +13,53 @@ export default function Create({ departments,flash }) {
         photo: null,
     });
 
-    // useEffect(() => {
-    //     if (flash.error) {
-    //         setFlashMessage({ success: '', error: flash.error });
-    //         const timer = setTimeout(() => {
-    //             setFlashMessage({ success: '', error: '' });
-    //         }, 3000);
-    //         return () => clearTimeout(timer);
-    //     }
-    // }, [flash]);
+    const [successMessage, setSuccessMessage] = useState(flash.success);
+    const [flashMessage, setFlashMessage] = useState({
+        success: "",
+        error: "",
+    });
+
+    useEffect(() => {
+        if (flash.error) {
+            setFlashMessage({ success: "", error: flash.error });
+            const timer = setTimeout(() => {
+                setFlashMessage({ success: "", error: "" });
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [flash]);
+
+    useEffect(() => {
+        if (successMessage) {
+            setTimeout(() => {
+                setSuccessMessage(null);
+                window.location.href = route("employees.index");
+            }, 3000);
+        }
+    }, [successMessage]);
 
     const handleSubmit = (e) => {
-        //backend
         e.preventDefault();
 
-        post(route("employees.store"),{
-            onSuccess: () => {
-                Swal.fire({
-                    icon: "success",
-                    title: "สำเร็จ!",
-                    text: "เพิ่มข้อมูลสำเร็จ!",
-                });
-                setSuccessMessage("Employee created successfully!");
-            },
-            onError: () => {
-                Swal.fire({
-                    icon: "error",
-                    title: "เกิดข้อผิดพลาด!",
-                    text: "ไม่สามารถเพิ่มข้อมูลได้ กรุณาลองอีกครั้ง",
-                });
-                setErrorMessage("An error occurred while creating employee. Please try again.");
-            },
-        });
-
+        post(route("employees.store"), {});
     };
 
     return (
         <AuthenticatedLayout>
             <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-                {/* <FlashMessage flash={flashMessage} /> */}
-
-                {/* แสดงข้อความ Success */}
-                {successMessage && (
-                    <div className="bg-green-100 text-green-800 p-4 rounded mb-4">
-                        {successMessage}
-                    </div>
-                )}
-
-                {/* แสดงข้อความ Error */}
-                {errorMessage && (
-                    <div className="bg-red-100 text-red-800 p-4 rounded mb-4">
-                        {errorMessage}
-                    </div>
-                )}
-
                 <h2 className="text-2xl font-bold text-center mb-6">
                     Add Employee
                 </h2>
+                {successMessage && (
+                    <div className="bg-yellow-500 text-white text-center py-2 mb-4 rounded">
+                        {successMessage}
+                    </div>
+                )}
+                {flashMessage.error && (
+                    <div className="bg-red-100 text-red-800 p-4 rounded mb-4">
+                        {flashMessage.error}
+                    </div>
+                )}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label className="block text-gray-700 font-medium">
@@ -93,8 +71,6 @@ export default function Create({ departments,flash }) {
                             onChange={(e) =>
                                 setData("first_name", e.target.value)
                             }
-                            maxLength="14"
-                            required
                             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         {errors.first_name && (
@@ -113,8 +89,6 @@ export default function Create({ departments,flash }) {
                             onChange={(e) =>
                                 setData("last_name", e.target.value)
                             }
-                            maxLength="16"
-                            required
                             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         {errors.last_name && (
@@ -130,19 +104,15 @@ export default function Create({ departments,flash }) {
                         <select
                             value={data.dept_no}
                             onChange={(e) => setData("dept_no", e.target.value)}
-                            required
                             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
-                            <option value="" disabled>
-                                Please select department
-                            </option>
+                            <option value="">Select Department</option>
                             {departments.map((dept) => (
                                 <option key={dept.dept_no} value={dept.dept_no}>
                                     {dept.dept_name}
                                 </option>
                             ))}
                         </select>
-
                         {errors.dept_no && (
                             <span className="text-red-500 text-sm">
                                 {errors.dept_no}
@@ -159,7 +129,6 @@ export default function Create({ departments,flash }) {
                             onChange={(e) =>
                                 setData("birth_date", e.target.value)
                             }
-                            required
                             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         {errors.birth_date && (
@@ -187,6 +156,7 @@ export default function Create({ departments,flash }) {
                         )}
                     </div>
                     <div>
+
                         <label className="block text-gray-700 font-medium">
                             Gender
                         </label>
@@ -197,12 +167,11 @@ export default function Create({ departments,flash }) {
                             className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             <option value="" disabled>
-                                Please select gender
-                            </option>
+                            Please select gender
+                        </option>
                             <option value="M">Male</option>
                             <option value="F">Female</option>
                         </select>
-
                         {errors.gender && (
                             <span className="text-red-500 text-sm">
                                 {errors.gender}
@@ -210,16 +179,16 @@ export default function Create({ departments,flash }) {
                         )}
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                            Photo:
+                        <label className="block text-gray-700 font-medium">
+                            Upload Photo
                         </label>
                         <input
                             type="file"
-                            accept="image/*"
                             onChange={(e) =>
                                 setData("photo", e.target.files[0])
                             }
-                            className="mt-1 p-2 block w-full border rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                            accept="image/*"
+                            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         {errors.photo && (
                             <span className="text-red-500 text-sm">

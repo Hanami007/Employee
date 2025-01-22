@@ -1,13 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { router, Link } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import Modal from "@/Components/Modal";
+import FlashMessage from "@/Components/FlashMessage";
 
-export default function Index({ employees, query, filterBy }) {
+export default function Index({ employees, query, filterBy, flash }) {
     const [search, setSearch] = useState(query || "");
     const [searchBy, setSearchBy] = useState(filterBy || "first_name");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedPhoto, setSelectedPhoto] = useState(null);
+    const [flashMessage, setFlashMessage] = useState({ success: '', error: '' });
+
+    useEffect(() => {
+        if (flash.success) {
+            setFlashMessage({ success: flash.success, error: '' });
+            // ตั้งเวลา 3 วินาทีให้ flash message หายไป
+            const timer = setTimeout(() => {
+                setFlashMessage({ success: '', error: '' });
+            }, 3000); // 3000ms = 3 วินาที
+            // เคลียร์ timer เมื่อ component ถูก unmount หรือ flashMessage เปลี่ยนแปลง
+            return () => clearTimeout(timer);
+        }
+    }, [flash]);
 
     const handleSearch = (e) => {
         e.preventDefault();
@@ -19,21 +33,10 @@ export default function Index({ employees, query, filterBy }) {
         setIsModalOpen(true);
     };
 
-    const validateForm = () => {
-        if (!data.first_name || !data.last_name || !data.dept_no || !data.gender) {
-            setErrorMessage("All fields are required.");
-            return false;
-        }
-        return true;
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!validateForm()) return;
-    }
     return (
         <AuthenticatedLayout>
             <div className="max-w-4xl mx-auto p-4">
+            <FlashMessage flash={flashMessage} />
                 <h1 className="text-2xl font-bold text-center mb-6">
                     รายชื่อพนักงาน
                 </h1>
