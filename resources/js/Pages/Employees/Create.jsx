@@ -1,11 +1,18 @@
 import { useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Swal from "sweetalert2";
+// import FlashMessage from '@/Components/FlashMessage';
 
-export default function Create({ departments }) {
+export default function Create({ departments,flash }) {
+
+    // const [successMessage, setSuccessMessage] = useState(flash.success);
+    // const [flashMessage, setFlashMessage] = useState({
+    //     success: '',
+    //     error: '',
+    // });
+
     const [successMessage, setSuccessMessage] = useState(null);
-
     const [errorMessage, setErrorMessage] = useState(null);
 
     const { data, setData, post, errors, processing } = useForm({
@@ -18,11 +25,21 @@ export default function Create({ departments }) {
         photo: null,
     });
 
+    // useEffect(() => {
+    //     if (flash.error) {
+    //         setFlashMessage({ success: '', error: flash.error });
+    //         const timer = setTimeout(() => {
+    //             setFlashMessage({ success: '', error: '' });
+    //         }, 3000);
+    //         return () => clearTimeout(timer);
+    //     }
+    // }, [flash]);
+
     const handleSubmit = (e) => {
         //backend
         e.preventDefault();
 
-        post(route("employees.store"), {
+        post(route("employees.store"),{
             onSuccess: () => {
                 Swal.fire({
                     icon: "success",
@@ -46,6 +63,8 @@ export default function Create({ departments }) {
     return (
         <AuthenticatedLayout>
             <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
+                {/* <FlashMessage flash={flashMessage} /> */}
+
                 {/* แสดงข้อความ Success */}
                 {successMessage && (
                     <div className="bg-green-100 text-green-800 p-4 rounded mb-4">
@@ -59,6 +78,7 @@ export default function Create({ departments }) {
                         {errorMessage}
                     </div>
                 )}
+
                 <h2 className="text-2xl font-bold text-center mb-6">
                     Add Employee
                 </h2>
