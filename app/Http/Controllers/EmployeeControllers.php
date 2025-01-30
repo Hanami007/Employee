@@ -68,7 +68,6 @@ class EmployeeControllers extends Controller
             "dept_no" => "required|exists:departments,dept_no",
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
         try {
             // ใช้ Database Transaction เพื่อความปลอดภัย
             DB::transaction(function () use ($validated, $request) {
