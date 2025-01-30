@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\EmployeeControllers;
+use App\Http\Controllers\ProductController;
 
 Route::get('/employees', [EmployeeControllers::class, 'index'])->middleware(['auth', 'verified'])->name('employees.index');
 // Route::resource('employee', EmployeeController::class) ->only(['index']);
@@ -14,6 +15,8 @@ Route::get('/employees/create', [EmployeeControllers::class, 'create'])->name('e
 
 Route::post('/employees', [EmployeeControllers::class, 'store'])->name('employees.store');
 //function สำหรับบันทึกข้อมูลพนักงาน
+
+Route::get('/products', [ProductController::class, 'index']);
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
